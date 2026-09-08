@@ -1,0 +1,34 @@
+name: probe
+on:
+  workflow_run:
+    workflows: ["ci"]
+    types: [completed, requested]
+permissions:
+  contents: read
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump actor and head fields
+        env:
+          A_ACTOR: ${{ github.actor }}
+          A_TRIGGERING: ${{ github.triggering_actor }}
+          R_ACTOR: ${{ github.event.workflow_run.actor.login }}
+          R_TRIGGERING: ${{ github.event.workflow_run.triggering_actor.login }}
+          R_EVENT: ${{ github.event.workflow_run.event }}
+          R_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          R_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          R_HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          R_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          R_ACTION: ${{ github.event.action }}
+        run: |
+          {
+            echo "action=$R_ACTION attempt=$R_ATTEMPT upstream_event=$R_EVENT"
+            echo "github.actor=$A_ACTOR"
+            echo "github.triggering_actor=$A_TRIGGERING"
+            echo "workflow_run.actor=$R_ACTOR"
+            echo "workflow_run.triggering_actor=$R_TRIGGERING"
+            echo "head_repository=$R_HEAD_REPO"
+            echo "head_branch=$R_HEAD_BRANCH"
+            echo "head_sha=$R_HEAD_SHA"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
