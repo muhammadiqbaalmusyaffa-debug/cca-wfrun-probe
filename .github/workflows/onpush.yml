@@ -1,0 +1,10 @@
+name: onpush
+on:
+  push:
+    branches-ignore: [main]
+permissions: {contents: read}
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "ON-PUSH WORKFLOW RAN for ${{ github.ref }}"
